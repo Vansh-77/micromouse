@@ -97,10 +97,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
-	  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-	  HAL_Delay(100);
-
+// blinking led using hal.
+//	  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+//	  HAL_Delay(100);
+// blinking led without hal.
+	  GPIOC->BSRR = (1<<13);
+	  HAL_Delay(80);
+	  GPIOC->BSRR = GPIO_BSRR_BR13;
+	  HAL_Delay(80);
 
   }
   /* USER CODE END 3 */
