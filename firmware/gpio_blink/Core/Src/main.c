@@ -40,6 +40,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
 
@@ -48,7 +49,31 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
+
+void led_on(void){
+	GPIOC->BSRR = (1U<<13);
+}
+void led_off(void){
+	GPIOC->BSRR = (1U<<(13+16));
+}
+void led_toggle(void){
+	if (GPIOC->ODR & (1<<13)){
+		led_off();
+	}
+	else{
+		led_on();
+	}
+}
+void delay_ms(uint32_t ms)
+{
+    while(ms--)
+    {
+    	TIM2->CNT = 0;
+    	while (TIM2->CNT < 1000);
+    }
+}
 
 /* USER CODE END PFP */
 
@@ -86,7 +111,9 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Start(&htim2);
 
   /* USER CODE END 2 */
 
@@ -100,11 +127,14 @@ int main(void)
 // blinking led using hal.
 //	  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 //	  HAL_Delay(100);
-// blinking led without hal.
-	  GPIOC->BSRR = (1<<13);
-	  HAL_Delay(80);
-	  GPIOC->BSRR = GPIO_BSRR_BR13;
-	  HAL_Delay(80);
+// blinking led without hal using registers.
+//	  GPIOC->BSRR = (1<<13);
+//	  HAL_Delay(80);
+//	  GPIOC->BSRR = GPIO_BSRR_BR13;
+//	  HAL_Delay(80);
+// blinking led using custom functions for led toggle and delay using tim2.
+	  led_toggle();
+	  delay_ms(100);
 
   }
   /* USER CODE END 3 */
@@ -149,6 +179,51 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 15;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 66535;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
+
 }
 
 /**
