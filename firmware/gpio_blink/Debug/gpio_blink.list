@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0000300c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0000812b  00000000  00000000  0000303c  2**0
+ 12 .debug_info   0000825c  00000000  00000000  0000303c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00001508  00000000  00000000  0000b167  2**0
+ 13 .debug_abbrev 0000159a  00000000  00000000  0000b298  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000978  00000000  00000000  0000c670  2**3
+ 14 .debug_aranges 00000990  00000000  00000000  0000c838  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 0000074d  00000000  00000000  0000cfe8  2**0
+ 15 .debug_rnglists 0000075a  00000000  00000000  0000d1c8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0001512f  00000000  00000000  0000d735  2**0
+ 16 .debug_macro  00015316  00000000  00000000  0000d922  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000097eb  00000000  00000000  00022864  2**0
+ 17 .debug_line   00009e4b  00000000  00000000  00022c38  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00087ec9  00000000  00000000  0002c04f  2**0
+ 18 .debug_str    00087ee2  00000000  00000000  0002ca83  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000b3f18  2**0
+ 19 .comment      00000043  00000000  00000000  000b4965  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  0000255c  00000000  00000000  000b3f5c  2**2
+ 20 .debug_frame  0000256c  00000000  00000000  000b49a8  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000066  00000000  00000000  000b64b8  2**0
+ 21 .debug_line_str 00000066  00000000  00000000  000b6f14  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -370,15 +370,14 @@ Disassembly of section .text:
  8000502:	bf00      	nop
 
 08000504 <led_on>:
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_TIM2_Init(void);
-/* USER CODE BEGIN PFP */
+#include "led.h"
+#include "main.h"
 
-void led_on(void){
+void led_on(void)
+{
  8000504:	b480      	push	{r7}
  8000506:	af00      	add	r7, sp, #0
-	GPIOC->BSRR = (1U<<13);
+    GPIOC->BSRR = (1U << 13);
  8000508:	4b04      	ldr	r3, [pc, #16]	@ (800051c <led_on+0x18>)
  800050a:	f44f 5200 	mov.w	r2, #8192	@ 0x2000
  800050e:	619a      	str	r2, [r3, #24]
@@ -391,10 +390,12 @@ void led_on(void){
  800051c:	40020800 	.word	0x40020800
 
 08000520 <led_off>:
-void led_off(void){
+
+void led_off(void)
+{
  8000520:	b480      	push	{r7}
  8000522:	af00      	add	r7, sp, #0
-	GPIOC->BSRR = (1U<<(13+16));
+    GPIOC->BSRR = (1U << (13 + 16));
  8000524:	4b04      	ldr	r3, [pc, #16]	@ (8000538 <led_off+0x18>)
  8000526:	f04f 5200 	mov.w	r2, #536870912	@ 0x20000000
  800052a:	619a      	str	r2, [r3, #24]
@@ -407,24 +408,24 @@ void led_off(void){
  8000538:	40020800 	.word	0x40020800
 
 0800053c <led_toggle>:
-void led_toggle(void){
+
+void led_toggle(void)
+{
  800053c:	b580      	push	{r7, lr}
  800053e:	af00      	add	r7, sp, #0
-	if (GPIOC->ODR & (1<<13)){
+    if(GPIOC->ODR & (1U << 13))
  8000540:	4b06      	ldr	r3, [pc, #24]	@ (800055c <led_toggle+0x20>)
  8000542:	695b      	ldr	r3, [r3, #20]
  8000544:	f403 5300 	and.w	r3, r3, #8192	@ 0x2000
  8000548:	2b00      	cmp	r3, #0
  800054a:	d002      	beq.n	8000552 <led_toggle+0x16>
-		led_off();
+        led_off();
  800054c:	f7ff ffe8 	bl	8000520 <led_off>
-	}
-	else{
-		led_on();
-	}
+    else
+        led_on();
 }
  8000550:	e001      	b.n	8000556 <led_toggle+0x1a>
-		led_on();
+        led_on();
  8000552:	f7ff ffd7 	bl	8000504 <led_on>
 }
  8000556:	bf00      	nop
@@ -433,6 +434,10 @@ void led_toggle(void){
  800055c:	40020800 	.word	0x40020800
 
 08000560 <delay_ms>:
+static void MX_TIM2_Init(void);
+/* USER CODE BEGIN PFP */
+
+
 void delay_ms(uint32_t ms)
 {
  8000560:	b480      	push	{r7}

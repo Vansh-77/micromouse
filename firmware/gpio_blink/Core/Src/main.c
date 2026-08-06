@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "led.h"
 
 /* USER CODE END Includes */
 
@@ -52,20 +53,7 @@ static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
-void led_on(void){
-	GPIOC->BSRR = (1U<<13);
-}
-void led_off(void){
-	GPIOC->BSRR = (1U<<(13+16));
-}
-void led_toggle(void){
-	if (GPIOC->ODR & (1<<13)){
-		led_off();
-	}
-	else{
-		led_on();
-	}
-}
+
 void delay_ms(uint32_t ms)
 {
     while(ms--)
