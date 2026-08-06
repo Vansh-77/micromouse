@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "led.h"
+#include "delay.h"
 
 /* USER CODE END Includes */
 
@@ -53,15 +54,6 @@ static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
-
-void delay_ms(uint32_t ms)
-{
-    while(ms--)
-    {
-    	TIM2->CNT = 0;
-    	while (TIM2->CNT < 1000);
-    }
-}
 
 /* USER CODE END PFP */
 

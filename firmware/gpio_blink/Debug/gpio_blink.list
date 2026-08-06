@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0000300c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0000825c  00000000  00000000  0000303c  2**0
+ 12 .debug_info   00008416  00000000  00000000  0000303c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 0000159a  00000000  00000000  0000b298  2**0
+ 13 .debug_abbrev 00001636  00000000  00000000  0000b452  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000990  00000000  00000000  0000c838  2**3
+ 14 .debug_aranges 000009a8  00000000  00000000  0000ca88  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 0000075a  00000000  00000000  0000d1c8  2**0
+ 15 .debug_rnglists 00000767  00000000  00000000  0000d430  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00015316  00000000  00000000  0000d922  2**0
+ 16 .debug_macro  000154fd  00000000  00000000  0000db97  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00009e4b  00000000  00000000  00022c38  2**0
+ 17 .debug_line   0000a4b2  00000000  00000000  00023094  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00087ee2  00000000  00000000  0002ca83  2**0
+ 18 .debug_str    00087eff  00000000  00000000  0002d546  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000b4965  2**0
+ 19 .comment      00000043  00000000  00000000  000b5445  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  0000256c  00000000  00000000  000b49a8  2**2
+ 20 .debug_frame  0000257c  00000000  00000000  000b5488  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000066  00000000  00000000  000b6f14  2**0
+ 21 .debug_line_str 00000066  00000000  00000000  000b7a04  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -369,108 +369,108 @@ Disassembly of section .text:
  8000500:	4770      	bx	lr
  8000502:	bf00      	nop
 
-08000504 <led_on>:
+08000504 <delay_ms>:
+#include "delay.h"
+#include "main.h"
+
+
+void delay_ms(uint32_t ms)
+{
+ 8000504:	b480      	push	{r7}
+ 8000506:	b083      	sub	sp, #12
+ 8000508:	af00      	add	r7, sp, #0
+ 800050a:	6078      	str	r0, [r7, #4]
+    while(ms--)
+ 800050c:	e00a      	b.n	8000524 <delay_ms+0x20>
+    {
+    	TIM2->CNT = 0;
+ 800050e:	f04f 4380 	mov.w	r3, #1073741824	@ 0x40000000
+ 8000512:	2200      	movs	r2, #0
+ 8000514:	625a      	str	r2, [r3, #36]	@ 0x24
+    	while (TIM2->CNT < 1000);
+ 8000516:	bf00      	nop
+ 8000518:	f04f 4380 	mov.w	r3, #1073741824	@ 0x40000000
+ 800051c:	6a5b      	ldr	r3, [r3, #36]	@ 0x24
+ 800051e:	f5b3 7f7a 	cmp.w	r3, #1000	@ 0x3e8
+ 8000522:	d3f9      	bcc.n	8000518 <delay_ms+0x14>
+    while(ms--)
+ 8000524:	687b      	ldr	r3, [r7, #4]
+ 8000526:	1e5a      	subs	r2, r3, #1
+ 8000528:	607a      	str	r2, [r7, #4]
+ 800052a:	2b00      	cmp	r3, #0
+ 800052c:	d1ef      	bne.n	800050e <delay_ms+0xa>
+    }
+}
+ 800052e:	bf00      	nop
+ 8000530:	bf00      	nop
+ 8000532:	370c      	adds	r7, #12
+ 8000534:	46bd      	mov	sp, r7
+ 8000536:	f85d 7b04 	ldr.w	r7, [sp], #4
+ 800053a:	4770      	bx	lr
+
+0800053c <led_on>:
 #include "led.h"
 #include "main.h"
 
 void led_on(void)
 {
- 8000504:	b480      	push	{r7}
- 8000506:	af00      	add	r7, sp, #0
+ 800053c:	b480      	push	{r7}
+ 800053e:	af00      	add	r7, sp, #0
     GPIOC->BSRR = (1U << 13);
- 8000508:	4b04      	ldr	r3, [pc, #16]	@ (800051c <led_on+0x18>)
- 800050a:	f44f 5200 	mov.w	r2, #8192	@ 0x2000
- 800050e:	619a      	str	r2, [r3, #24]
+ 8000540:	4b04      	ldr	r3, [pc, #16]	@ (8000554 <led_on+0x18>)
+ 8000542:	f44f 5200 	mov.w	r2, #8192	@ 0x2000
+ 8000546:	619a      	str	r2, [r3, #24]
 }
- 8000510:	bf00      	nop
- 8000512:	46bd      	mov	sp, r7
- 8000514:	f85d 7b04 	ldr.w	r7, [sp], #4
- 8000518:	4770      	bx	lr
- 800051a:	bf00      	nop
- 800051c:	40020800 	.word	0x40020800
+ 8000548:	bf00      	nop
+ 800054a:	46bd      	mov	sp, r7
+ 800054c:	f85d 7b04 	ldr.w	r7, [sp], #4
+ 8000550:	4770      	bx	lr
+ 8000552:	bf00      	nop
+ 8000554:	40020800 	.word	0x40020800
 
-08000520 <led_off>:
+08000558 <led_off>:
 
 void led_off(void)
 {
- 8000520:	b480      	push	{r7}
- 8000522:	af00      	add	r7, sp, #0
+ 8000558:	b480      	push	{r7}
+ 800055a:	af00      	add	r7, sp, #0
     GPIOC->BSRR = (1U << (13 + 16));
- 8000524:	4b04      	ldr	r3, [pc, #16]	@ (8000538 <led_off+0x18>)
- 8000526:	f04f 5200 	mov.w	r2, #536870912	@ 0x20000000
- 800052a:	619a      	str	r2, [r3, #24]
+ 800055c:	4b04      	ldr	r3, [pc, #16]	@ (8000570 <led_off+0x18>)
+ 800055e:	f04f 5200 	mov.w	r2, #536870912	@ 0x20000000
+ 8000562:	619a      	str	r2, [r3, #24]
 }
- 800052c:	bf00      	nop
- 800052e:	46bd      	mov	sp, r7
- 8000530:	f85d 7b04 	ldr.w	r7, [sp], #4
- 8000534:	4770      	bx	lr
- 8000536:	bf00      	nop
- 8000538:	40020800 	.word	0x40020800
+ 8000564:	bf00      	nop
+ 8000566:	46bd      	mov	sp, r7
+ 8000568:	f85d 7b04 	ldr.w	r7, [sp], #4
+ 800056c:	4770      	bx	lr
+ 800056e:	bf00      	nop
+ 8000570:	40020800 	.word	0x40020800
 
-0800053c <led_toggle>:
+08000574 <led_toggle>:
 
 void led_toggle(void)
 {
- 800053c:	b580      	push	{r7, lr}
- 800053e:	af00      	add	r7, sp, #0
+ 8000574:	b580      	push	{r7, lr}
+ 8000576:	af00      	add	r7, sp, #0
     if(GPIOC->ODR & (1U << 13))
- 8000540:	4b06      	ldr	r3, [pc, #24]	@ (800055c <led_toggle+0x20>)
- 8000542:	695b      	ldr	r3, [r3, #20]
- 8000544:	f403 5300 	and.w	r3, r3, #8192	@ 0x2000
- 8000548:	2b00      	cmp	r3, #0
- 800054a:	d002      	beq.n	8000552 <led_toggle+0x16>
+ 8000578:	4b06      	ldr	r3, [pc, #24]	@ (8000594 <led_toggle+0x20>)
+ 800057a:	695b      	ldr	r3, [r3, #20]
+ 800057c:	f403 5300 	and.w	r3, r3, #8192	@ 0x2000
+ 8000580:	2b00      	cmp	r3, #0
+ 8000582:	d002      	beq.n	800058a <led_toggle+0x16>
         led_off();
- 800054c:	f7ff ffe8 	bl	8000520 <led_off>
+ 8000584:	f7ff ffe8 	bl	8000558 <led_off>
     else
         led_on();
 }
- 8000550:	e001      	b.n	8000556 <led_toggle+0x1a>
+ 8000588:	e001      	b.n	800058e <led_toggle+0x1a>
         led_on();
- 8000552:	f7ff ffd7 	bl	8000504 <led_on>
+ 800058a:	f7ff ffd7 	bl	800053c <led_on>
 }
- 8000556:	bf00      	nop
- 8000558:	bd80      	pop	{r7, pc}
- 800055a:	bf00      	nop
- 800055c:	40020800 	.word	0x40020800
-
-08000560 <delay_ms>:
-static void MX_TIM2_Init(void);
-/* USER CODE BEGIN PFP */
-
-
-void delay_ms(uint32_t ms)
-{
- 8000560:	b480      	push	{r7}
- 8000562:	b083      	sub	sp, #12
- 8000564:	af00      	add	r7, sp, #0
- 8000566:	6078      	str	r0, [r7, #4]
-    while(ms--)
- 8000568:	e00a      	b.n	8000580 <delay_ms+0x20>
-    {
-    	TIM2->CNT = 0;
- 800056a:	f04f 4380 	mov.w	r3, #1073741824	@ 0x40000000
- 800056e:	2200      	movs	r2, #0
- 8000570:	625a      	str	r2, [r3, #36]	@ 0x24
-    	while (TIM2->CNT < 1000);
- 8000572:	bf00      	nop
- 8000574:	f04f 4380 	mov.w	r3, #1073741824	@ 0x40000000
- 8000578:	6a5b      	ldr	r3, [r3, #36]	@ 0x24
- 800057a:	f5b3 7f7a 	cmp.w	r3, #1000	@ 0x3e8
- 800057e:	d3f9      	bcc.n	8000574 <delay_ms+0x14>
-    while(ms--)
- 8000580:	687b      	ldr	r3, [r7, #4]
- 8000582:	1e5a      	subs	r2, r3, #1
- 8000584:	607a      	str	r2, [r7, #4]
- 8000586:	2b00      	cmp	r3, #0
- 8000588:	d1ef      	bne.n	800056a <delay_ms+0xa>
-    }
-}
- 800058a:	bf00      	nop
- 800058c:	bf00      	nop
- 800058e:	370c      	adds	r7, #12
- 8000590:	46bd      	mov	sp, r7
- 8000592:	f85d 7b04 	ldr.w	r7, [sp], #4
- 8000596:	4770      	bx	lr
+ 800058e:	bf00      	nop
+ 8000590:	bd80      	pop	{r7, pc}
+ 8000592:	bf00      	nop
+ 8000594:	40020800 	.word	0x40020800
 
 08000598 <main>:
 /**
@@ -514,10 +514,10 @@ int main(void)
 //	  HAL_Delay(80);
 // blinking led using custom functions for led toggle and delay using tim2.
 	  led_toggle();
- 80005b2:	f7ff ffc3 	bl	800053c <led_toggle>
+ 80005b2:	f7ff ffdf 	bl	8000574 <led_toggle>
 	  delay_ms(100);
  80005b6:	2064      	movs	r0, #100	@ 0x64
- 80005b8:	f7ff ffd2 	bl	8000560 <delay_ms>
+ 80005b8:	f7ff ffa4 	bl	8000504 <delay_ms>
 	  led_toggle();
  80005bc:	bf00      	nop
  80005be:	e7f8      	b.n	80005b2 <main+0x1a>
