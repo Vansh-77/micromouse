@@ -24,6 +24,7 @@
 #include "led.h"
 #include "delay.h"
 #include "pwm.h"
+#include "motor.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -99,6 +100,8 @@ int main(void)
   TIM2->CR1 |= (1U << 0);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
 
   /* USER CODE END 2 */
 
@@ -110,16 +113,14 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-	  for (int i=0; i<=100;i++){
-		  pwm_set(1,i);
-		  pwm_set(2,100-i);
-		  delay_ms(10);
-	  }
-	  for (int i=0; i<=100;i++){
-	  		  pwm_set(1,100-i);
-	  		  pwm_set(2,i);
-	  		  delay_ms(10);
-	  	  }
+	  motor_left(+50);    // forward 50%
+	  motor_left(-50);    // reverse 50%
+
+	  motor_right(+50);   // forward 50%
+	  motor_right(-50);   // reverse 50%
+
+	  motor_left(0);      // stop
+	  motor_right(0);     // stop
 
 
   }
@@ -268,6 +269,14 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN TIM3_Init 2 */
 
   /* USER CODE END TIM3_Init 2 */
@@ -290,6 +299,7 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);

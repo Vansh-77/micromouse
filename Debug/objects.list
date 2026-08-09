@@ -1,6 +1,7 @@
 "./Core/Src/delay.o"
 "./Core/Src/led.o"
 "./Core/Src/main.o"
+"./Core/Src/motor.o"
 "./Core/Src/pwm.o"
 "./Core/Src/stm32f4xx_hal_msp.o"
 "./Core/Src/stm32f4xx_it.o"
