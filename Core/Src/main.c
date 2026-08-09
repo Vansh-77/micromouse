@@ -25,6 +25,7 @@
 #include "delay.h"
 #include "pwm.h"
 #include "motor.h"
+#include "uart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -106,7 +107,7 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
-  char msg[] = "Micromouse UART OK\r\n";
+  char msg[] = "UART OK\r\n";
 
   /* USER CODE END 2 */
 
@@ -127,13 +128,18 @@ int main(void)
 //	  motor_left(0);      // stop
 //	  motor_right(0);     // stop
 
-	    HAL_UART_Transmit(&huart2,
-	                      (uint8_t *)msg,
-	                      sizeof(msg) - 1,
-	                      HAL_MAX_DELAY);
+//	    uart_write(msg);
+//	    uart_write("TIM2 CNT = ");
+//	    uart_write_uint(TIM3->CNT);
+//	    uart_write("\r\n");
+//	    delay_ms(500);
 
-	    delay_ms(1000);
+	  int16_t left = 50;
+	  int16_t right = 45;
 
+	  uart_printf("LEFT=%d RIGHT=%d\r\n", left, right);
+
+	  delay_ms(500);
 
   }
   /* USER CODE END 3 */

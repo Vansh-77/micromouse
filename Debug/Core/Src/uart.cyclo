@@ -1,0 +1,5 @@
+../Core/Src/uart.c:6:6:uart_write_char	2
+../Core/Src/uart.c:14:6:uart_write	2
+../Core/Src/uart.c:21:6:uart_write_uint	4
+../Core/Src/uart.c:43:6:uart_write_int	2
+../Core/Src/uart.c:55:6:uart_printf	1
