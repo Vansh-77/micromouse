@@ -44,6 +44,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
+
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
@@ -59,6 +61,7 @@ static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -100,6 +103,7 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_USART2_UART_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 //  HAL_TIM_Base_Start(&htim2);
   TIM2->CR1 |= (1U << 0);
@@ -107,7 +111,20 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
-  char msg[] = "UART OK\r\n";
+  uint8_t whoami;
+  HAL_I2C_Mem_Read(
+      &hi2c1,              // Use I2C1
+      0x68 << 1,           // MPU6500 address
+      0x75,                // WHO_AM_I register
+      I2C_MEMADD_SIZE_8BIT,// Register address is 8-bit
+      &who_am_i,           // Store received byte here
+      1,                   // Read 1 byte
+      100                  // 100 ms timeout
+  );
+
+  	  uart_printf("MPU6500 WHO_AM_I = 0x%02X\r\n", whoami);
+
+//  char msg[] = "UART OK\r\n";
 
   /* USER CODE END 2 */
 
@@ -134,12 +151,22 @@ int main(void)
 //	    uart_write("\r\n");
 //	    delay_ms(500);
 
-	  int16_t left = 50;
-	  int16_t right = 45;
+//	  int16_t left = 50;
+//	  int16_t right = 45;
+//
+//	  uart_printf("LEFT=%d RIGHT=%d\r\n", left, right);
+//
+//	  delay_ms(500);
+//	  pwm_set(1 , 50);
+//	  for (int i=0; i<100; i++){
+//		  pwm_set(1 , i);
+//		  delay_ms(50);
+//	  }
+//	  for (int i=0; i<100; i++){
+//	  		  pwm_set(1 , 100-i);
+//	  		  delay_ms(50);
+//	  }
 
-	  uart_printf("LEFT=%d RIGHT=%d\r\n", left, right);
-
-	  delay_ms(500);
 
   }
   /* USER CODE END 3 */
@@ -184,6 +211,40 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
 }
 
 /**
