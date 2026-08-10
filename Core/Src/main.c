@@ -27,6 +27,7 @@
 #include "motor.h"
 #include "uart.h"
 #include "i2c.h"
+#include "mpu6500.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -112,7 +113,7 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
-  uint8_t whoami = i2c_read_reg(0x68,0x75);
+//  uint8_t whoami;
 //  HAL_I2C_Mem_Read(
 //      &hi2c1,              // Use I2C1
 //      0x68 << 1,           // MPU6500 address
@@ -123,8 +124,8 @@ int main(void)
 //      100                  // 100 ms timeout
 //  );
 
-
-  uart_printf("MPU6500 WHO_AM_I = 0x%02X\r\n", whoami);
+  mpu6500_init();
+  MPU6500_Data imu;
 
 //  char msg[] = "UART OK\r\n";
 
@@ -169,6 +170,17 @@ int main(void)
 //	  		  delay_ms(50);
 //	  }
 
+	    mpu6500_read(&imu);
+
+	    uart_printf("A: %d %d %d | G: %d %d %d\r\n",
+	                imu.accel_x,
+	                imu.accel_y,
+	                imu.accel_z,
+	                imu.gyro_x,
+	                imu.gyro_y,
+	                imu.gyro_z);
+
+	    delay_ms(100);
 
   }
   /* USER CODE END 3 */
