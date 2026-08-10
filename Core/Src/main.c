@@ -26,6 +26,7 @@
 #include "pwm.h"
 #include "motor.h"
 #include "uart.h"
+#include "i2c.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -111,18 +112,19 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
-  uint8_t whoami;
-  HAL_I2C_Mem_Read(
-      &hi2c1,              // Use I2C1
-      0x68 << 1,           // MPU6500 address
-      0x75,                // WHO_AM_I register
-      I2C_MEMADD_SIZE_8BIT,// Register address is 8-bit
-      &who_am_i,           // Store received byte here
-      1,                   // Read 1 byte
-      100                  // 100 ms timeout
-  );
+  uint8_t whoami = i2c_read_reg(0x68,0x75);
+//  HAL_I2C_Mem_Read(
+//      &hi2c1,              // Use I2C1
+//      0x68 << 1,           // MPU6500 address
+//      0x75,                // WHO_AM_I register
+//      I2C_MEMADD_SIZE_8BIT,// Register address is 8-bit
+//      &who_am_i,           // Store received byte here
+//      1,                   // Read 1 byte
+//      100                  // 100 ms timeout
+//  );
 
-  	  uart_printf("MPU6500 WHO_AM_I = 0x%02X\r\n", whoami);
+
+  uart_printf("MPU6500 WHO_AM_I = 0x%02X\r\n", whoami);
 
 //  char msg[] = "UART OK\r\n";
 
