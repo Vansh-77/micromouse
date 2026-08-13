@@ -1,5 +1,15 @@
 #include "i2c.h"
 #include "main.h"
+#define I2C_TIMEOUT 1000000U
+
+
+static uint8_t i2c_wait_flag(uint32_t flag){
+    uint32_t timeout = I2C_TIMEOUT;
+    while (!(I2C1->SR1 & flag)){
+        if (--timeout == 0)return 0;
+    }
+    return 1;
+}
 
 uint8_t i2c_read_reg(uint8_t addr , uint8_t reg){
 	I2C1->CR1 |= I2C_CR1_START;
@@ -57,15 +67,21 @@ void i2c_write_reg(uint8_t addr, uint8_t reg, uint8_t data){
 
 }
 
-void i2c_read_regs(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t len)
+
+
+
+uint8_t i2c_read_regs(uint8_t addr,
+                      uint8_t reg,
+                      uint8_t *data,
+                      uint8_t len)
 {
     volatile uint32_t temp;
     uint8_t i = 0;
 
     if (len == 0)
-        return;
+        return 0;
 
-    /* Make sure we're in the normal receive configuration */
+    /* Normal receive configuration */
     I2C1->CR1 &= ~I2C_CR1_POS;
     I2C1->CR1 |= I2C_CR1_ACK;
 
@@ -75,7 +91,9 @@ void i2c_read_regs(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t len)
 
     I2C1->CR1 |= I2C_CR1_START;
 
-    while (!(I2C1->SR1 & I2C_SR1_SB));
+    if (!i2c_wait_flag(I2C_SR1_SB))
+        goto error;
+
 
     /* =========================
        DEVICE ADDRESS + WRITE
@@ -83,22 +101,27 @@ void i2c_read_regs(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t len)
 
     I2C1->DR = (addr << 1);
 
-    while (!(I2C1->SR1 & I2C_SR1_ADDR));
+    if (!i2c_wait_flag(I2C_SR1_ADDR))
+        goto error;
 
     /* Clear ADDR */
     temp = I2C1->SR1;
     temp = I2C1->SR2;
     (void)temp;
 
+
     /* =========================
        REGISTER ADDRESS
        ========================= */
 
-    while (!(I2C1->SR1 & I2C_SR1_TXE));
+    if (!i2c_wait_flag(I2C_SR1_TXE))
+        goto error;
 
     I2C1->DR = reg;
 
-    while (!(I2C1->SR1 & I2C_SR1_BTF));
+    if (!i2c_wait_flag(I2C_SR1_BTF))
+        goto error;
+
 
     /* =========================
        REPEATED START
@@ -106,7 +129,9 @@ void i2c_read_regs(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t len)
 
     I2C1->CR1 |= I2C_CR1_START;
 
-    while (!(I2C1->SR1 & I2C_SR1_SB));
+    if (!i2c_wait_flag(I2C_SR1_SB))
+        goto error;
+
 
     /* =========================
        DEVICE ADDRESS + READ
@@ -114,84 +139,131 @@ void i2c_read_regs(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t len)
 
     I2C1->DR = (addr << 1) | 1;
 
-    while (!(I2C1->SR1 & I2C_SR1_ADDR));
+    if (!i2c_wait_flag(I2C_SR1_ADDR))
+        goto error;
 
-    /*
-     * Clear ADDR.
-     * This also starts the receive process.
-     */
+
+    /* Clear ADDR */
     temp = I2C1->SR1;
     temp = I2C1->SR2;
     (void)temp;
 
 
     /* =========================
-       3+ BYTE RECEIVE
+       RECEIVE
        ========================= */
 
-    while (len > 3)
+    if (len == 1)
     {
         /*
-         * With ACK enabled, BTF means another
-         * received byte is ready.
+         * One-byte receive
          */
-        while (!(I2C1->SR1 & I2C_SR1_BTF));
 
-        data[i++] = I2C1->DR;
+        I2C1->CR1 &= ~I2C_CR1_ACK;
 
-        len--;
+        I2C1->CR1 |= I2C_CR1_STOP;
+
+        if (!i2c_wait_flag(I2C_SR1_RXNE))
+            goto error;
+
+        data[0] = I2C1->DR;
     }
 
+    else if (len == 2)
+    {
+        /*
+         * Two-byte receive
+         */
+
+        I2C1->CR1 &= ~I2C_CR1_ACK;
+        I2C1->CR1 |= I2C_CR1_POS;
+
+        if (!i2c_wait_flag(I2C_SR1_BTF))
+            goto error;
+
+        I2C1->CR1 |= I2C_CR1_STOP;
+
+        data[0] = I2C1->DR;
+        data[1] = I2C1->DR;
+
+        I2C1->CR1 &= ~I2C_CR1_POS;
+    }
+
+    else
+    {
+        /*
+         * 3+ byte receive
+         */
+
+        while (len > 3)
+        {
+            if (!i2c_wait_flag(I2C_SR1_BTF))
+                goto error;
+
+            data[i++] = I2C1->DR;
+
+            len--;
+        }
+
+        /*
+         * Three bytes remain.
+         */
+
+        if (!i2c_wait_flag(I2C_SR1_BTF))
+            goto error;
+
+        /*
+         * Stop ACKing.
+         */
+        I2C1->CR1 &= ~I2C_CR1_ACK;
+
+        /*
+         * Read first of final three bytes.
+         */
+        data[i++] = I2C1->DR;
+
+        /*
+         * Generate STOP.
+         */
+        I2C1->CR1 |= I2C_CR1_STOP;
+
+        /*
+         * Read second-last byte.
+         */
+        data[i++] = I2C1->DR;
+
+        /*
+         * Wait for final byte.
+         */
+        if (!i2c_wait_flag(I2C_SR1_RXNE))
+            goto error;
+
+        /*
+         * Read final byte.
+         */
+        data[i++] = I2C1->DR;
+    }
+
+    /* Restore normal configuration */
+    I2C1->CR1 |= I2C_CR1_ACK;
+    I2C1->CR1 &= ~I2C_CR1_POS;
+
+    return 1;
+
+
+error:
 
     /*
-     * Exactly 3 bytes remain.
-     */
-    while (!(I2C1->SR1 & I2C_SR1_BTF));
-
-    /*
-     * Stop acknowledging received bytes.
-     * This prepares the final byte to be NACKed.
-     */
-    I2C1->CR1 &= ~I2C_CR1_ACK;
-
-    /*
-     * Read byte N-2.
-     */
-    data[i++] = I2C1->DR;
-
-    /*
-     * Generate STOP.
+     * Something went wrong.
+     * Make sure the bus is released.
      */
     I2C1->CR1 |= I2C_CR1_STOP;
 
-    /*
-     * Read byte N-1.
-     */
-    data[i++] = I2C1->DR;
-
-    /*
-     * IMPORTANT:
-     * Wait for the final byte to actually arrive.
-     */
-    while (!(I2C1->SR1 & I2C_SR1_RXNE));
-
-    /*
-     * Read final byte N.
-     */
-    data[i++] = I2C1->DR;
-
-    /*
-     * Wait until hardware clears STOP.
-     */
-    while (I2C1->CR1 & I2C_CR1_STOP);
-
-    /*
-     * Restore normal state for the next transaction.
-     */
     I2C1->CR1 |= I2C_CR1_ACK;
+    I2C1->CR1 &= ~I2C_CR1_POS;
+
+    return 0;
 }
-
-
 
 
 

@@ -22,7 +22,7 @@ typedef struct
     int16_t temperature;
 } MPU6500_Data;
 
-void mpu6500_read(MPU6500_Data *data);
+uint8_t mpu6500_read(MPU6500_Data *data);
 
 
 #endif

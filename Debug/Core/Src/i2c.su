@@ -1,3 +1,4 @@
-../Core/Src/i2c.c:4:9:i2c_read_reg	24	static
-../Core/Src/i2c.c:33:6:i2c_write_reg	24	static
-../Core/Src/i2c.c:60:6:i2c_read_regs	24	static
+../Core/Src/i2c.c:6:16:i2c_wait_flag	24	static
+../Core/Src/i2c.c:14:9:i2c_read_reg	24	static
+../Core/Src/i2c.c:43:6:i2c_write_reg	24	static
+../Core/Src/i2c.c:73:9:i2c_read_regs	24	static

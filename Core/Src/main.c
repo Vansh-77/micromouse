@@ -173,15 +173,20 @@ int main(void)
 //	  		  delay_ms(50);
 //	  }
 
-	    mpu6500_read(&imu);
-
-	    uart_printf("A: %d %d %d | G: %d %d %d\r\n",
-	                imu.accel_x,
-	                imu.accel_y,
-	                imu.accel_z,
-	                imu.gyro_x,
-	                imu.gyro_y,
-	                imu.gyro_z);
+	  if (mpu6500_read(&imu))
+	  {
+	      uart_printf("A: %d %d %d | G: %d %d %d\r\n",
+	                  imu.accel_x,
+	                  imu.accel_y,
+	                  imu.accel_z,
+	                  imu.gyro_x,
+	                  imu.gyro_y,
+	                  imu.gyro_z);
+	  }
+	  else
+	  {
+	      uart_printf("MPU6500 READ FAILED\r\n");
+	  }
 
 	    delay_ms(100);
 

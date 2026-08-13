@@ -10,13 +10,16 @@ uint8_t mpu6500_whoami(void){
 	return i2c_read_reg(MPU6500_ADDR, MPU6500_WHO_AM_I)	;
 }
 
-void mpu6500_read(MPU6500_Data *data){
+uint8_t mpu6500_read(MPU6500_Data *data){
 	uint8_t buffer[14];
 
-	i2c_read_regs(MPU6500_ADDR,
-	              0x3B,
-	              buffer,
-	              14);
+	if (!i2c_read_regs(MPU6500_ADDR,
+	                   0x3B,
+	                   buffer,
+	                   14))
+	{
+	    return 0;
+	}
 
 	data->accel_x = (int16_t)((buffer[0] << 8) | buffer[1]);
 	data->accel_y = (int16_t)((buffer[2] << 8) | buffer[3]);
