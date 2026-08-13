@@ -1,6 +1,12 @@
 #include "main.h"
 #include "mpu6500.h"
 #include "i2c.h"
+#include "delay.h"
+#include "uart.h"
+
+static float gyro_bias_x = 0.0f;
+static float gyro_bias_y = 0.0f;
+static float gyro_bias_z = 0.0f;
 
 void mpu6500_init(void){
 	/* Wake MPU6500 */
@@ -48,9 +54,37 @@ uint8_t mpu6500_read(MPU6500_Data *data){
 	data->accel_y = (int16_t)((buffer[2] << 8) | buffer[3])/ 16384.0f;
 	data->accel_z = (int16_t)((buffer[4] << 8) | buffer[5])/ 16384.0f;
 	data->temperature =(float)((int16_t)((buffer[6] << 8) | buffer[7]))/ 333.87f + 21.0f;
-	data->gyro_x = (int16_t)((buffer[8] << 8) | buffer[9]) / 131.0f;
-	data->gyro_y = (int16_t)((buffer[10] << 8) | buffer[11]) / 131.0f;
-	data->gyro_z = (int16_t)((buffer[12] << 8) | buffer[13]) / 131.0f;
+	data->gyro_x = (int16_t)((buffer[8] << 8) | buffer[9]) / 131.0f - gyro_bias_x;
+	data->gyro_y = (int16_t)((buffer[10] << 8) | buffer[11]) / 131.0f - gyro_bias_y;
+	data->gyro_z = (int16_t)((buffer[12] << 8) | buffer[13]) / 131.0f - gyro_bias_z;
 	return 1;
 
+}
+
+void mpu6500_calibrate_gyro(void)
+{
+    const uint16_t samples = 500;
+
+    float sum_x = 0.0f;
+    float sum_y = 0.0f;
+    float sum_z = 0.0f;
+
+    MPU6500_Data data;
+
+    for (uint16_t i = 0; i < samples; i++)
+    {
+        if (mpu6500_read(&data))
+        {
+            sum_x += data.gyro_x;
+            sum_y += data.gyro_y;
+            sum_z += data.gyro_z;
+        }
+
+        delay_ms(2);
+    }
+
+    gyro_bias_x = sum_x / samples;
+    gyro_bias_y = sum_y / samples;
+    gyro_bias_z = sum_z / samples;
+    uart_printf("g_bias_x %.3f g_bias_y %.3f g_bias_z %.3f\r\n", gyro_bias_x , gyro_bias_y , gyro_bias_z);
 }

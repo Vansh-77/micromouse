@@ -27,6 +27,7 @@ typedef struct
 } MPU6500_Data;
 
 uint8_t mpu6500_read(MPU6500_Data *data);
+void mpu6500_calibrate_gyro(void);
 
 
 #endif

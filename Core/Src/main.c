@@ -134,6 +134,12 @@ int main(void)
   char msg[] = "UART OK\r\n";
   uart_printf(msg);
 
+  uart_printf("Calibrating gyro...\r\n");
+
+  mpu6500_calibrate_gyro();
+
+  uart_write("Gyro calibration done\r\n");
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
