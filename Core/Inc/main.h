@@ -67,6 +67,10 @@ void Error_Handler(void);
 #define IN2_GPIO_Port GPIOB
 #define IN1_Pin GPIO_PIN_1
 #define IN1_GPIO_Port GPIOB
+#define BTTX_Pin GPIO_PIN_9
+#define BTTX_GPIO_Port GPIOA
+#define BTRX_Pin GPIO_PIN_10
+#define BTRX_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 #define IN1_CHANNEL 4

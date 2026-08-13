@@ -51,6 +51,7 @@ I2C_HandleTypeDef hi2c1;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
+UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
@@ -64,6 +65,7 @@ static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -106,6 +108,7 @@ int main(void)
   MX_TIM3_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 //  HAL_TIM_Base_Start(&htim2);
   TIM2->CR1 |= (1U << 0);
@@ -125,8 +128,8 @@ int main(void)
 //  );
 //  whoami =  mpu6500_whoami();
 //  uart_printf("%d",whoami);
-//  mpu6500_init();
-//  MPU6500_Data imu;
+  mpu6500_init();
+  MPU6500_Data imu;
 //
   char msg[] = "UART OK\r\n";
   uart_printf(msg);
@@ -175,13 +178,13 @@ int main(void)
 
 	  if (mpu6500_read(&imu))
 	  {
-	      uart_printf("A: %d %d %d | G: %d %d %d\r\n",
-	                  imu.accel_x,
-	                  imu.accel_y,
-	                  imu.accel_z,
-	                  imu.gyro_x,
-	                  imu.gyro_y,
-	                  imu.gyro_z);
+		  uart_printf("A: %.3f %.3f %.3f | G: %.3f %.3f %.3f\r\n",
+		              imu.accel_x,
+		              imu.accel_y,
+		              imu.accel_z,
+		              imu.gyro_x,
+		              imu.gyro_y,
+		              imu.gyro_z);
 	  }
 	  else
 	  {
@@ -381,6 +384,39 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 2 */
   HAL_TIM_MspPostInit(&htim3);
+
+}
+
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 9600;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
 
 }
 
