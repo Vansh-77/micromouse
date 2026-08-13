@@ -1,4 +1,7 @@
-../Core/Src/mpu6500.c:11:6:mpu6500_init	1
-../Core/Src/mpu6500.c:38:9:mpu6500_whoami	1
-../Core/Src/mpu6500.c:42:9:mpu6500_read	2
-../Core/Src/mpu6500.c:64:6:mpu6500_calibrate_gyro	3
+../Core/Src/mpu6500.c:13:6:mpu6500_init	1
+../Core/Src/mpu6500.c:40:9:mpu6500_whoami	1
+../Core/Src/mpu6500.c:44:9:mpu6500_read	2
+../Core/Src/mpu6500.c:66:6:mpu6500_calibrate_gyro	3
+../Core/Src/mpu6500.c:94:6:mpu6500_update_heading	4
+../Core/Src/mpu6500.c:110:7:mpu6500_get_heading	1
+../Core/Src/mpu6500.c:115:6:mpu6500_reset_heading	1

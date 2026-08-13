@@ -129,7 +129,7 @@ int main(void)
 //  whoami =  mpu6500_whoami();
 //  uart_printf("%d",whoami);
   mpu6500_init();
-  MPU6500_Data imu;
+//  MPU6500_Data imu;
 //
   char msg[] = "UART OK\r\n";
   uart_printf(msg);
@@ -139,11 +139,14 @@ int main(void)
   mpu6500_calibrate_gyro();
 
   uart_write("Gyro calibration done\r\n");
+  uint16_t last_time = TIM2->CNT;
+  float time = 0;
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
     /* USER CODE END WHILE */
@@ -182,22 +185,31 @@ int main(void)
 //	  		  delay_ms(50);
 //	  }
 
-	  if (mpu6500_read(&imu))
-	  {
-		  uart_printf("A: %.3f %.3f %.3f | G: %.3f %.3f %.3f\r\n",
-		              imu.accel_x,
-		              imu.accel_y,
-		              imu.accel_z,
-		              imu.gyro_x,
-		              imu.gyro_y,
-		              imu.gyro_z);
-	  }
-	  else
-	  {
-	      uart_printf("MPU6500 READ FAILED\r\n");
-	  }
-	  	  delay_ms(100);
-
+//	  if (mpu6500_read(&imu))
+//	  {
+//		  uart_printf("A: %.3f %.3f %.3f | G: %.3f %.3f %.3f\r\n",
+//		              imu.accel_x,
+//		              imu.accel_y,
+//		              imu.accel_z,
+//		              imu.gyro_x,
+//		              imu.gyro_y,
+//		              imu.gyro_z);
+//	  }
+//	  else
+//	  {
+//	      uart_printf("MPU6500 READ FAILED\r\n");
+//	  }
+	  uint16_t now = TIM2->CNT;
+	  uint16_t elapsed = now - last_time;
+	  time += elapsed/1000000.0f;
+	  last_time = now;
+	  float dt = elapsed / 1000000.0f;
+//	  if (time < 30){
+	  mpu6500_update_heading(dt);
+//	  uart_printf("%.3f \r\n" , time);
+	  uart_printf("Heading: %.2f\r\n", mpu6500_get_heading());
+//	  }
+	  delay_ms(10);
   }
   /* USER CODE END 3 */
 }

@@ -8,6 +8,8 @@ static float gyro_bias_x = 0.0f;
 static float gyro_bias_y = 0.0f;
 static float gyro_bias_z = 0.0f;
 
+static float heading = 0.0f;
+
 void mpu6500_init(void){
 	/* Wake MPU6500 */
     i2c_write_reg(MPU6500_ADDR,
@@ -88,3 +90,32 @@ void mpu6500_calibrate_gyro(void)
     gyro_bias_z = sum_z / samples;
     uart_printf("g_bias_x %.3f g_bias_y %.3f g_bias_z %.3f\r\n", gyro_bias_x , gyro_bias_y , gyro_bias_z);
 }
+
+void mpu6500_update_heading(float dt)
+{
+    MPU6500_Data imu;
+
+    if (mpu6500_read(&imu))
+    {
+        heading += imu.gyro_z * dt;
+
+        /* Keep heading between -180 and +180 */
+        if (heading > 180.0f)
+            heading -= 360.0f;
+
+        if (heading < -180.0f)
+            heading += 360.0f;
+    }
+}
+float mpu6500_get_heading(void)
+{
+    return heading;
+}
+
+void mpu6500_reset_heading(void)
+{
+    heading = 0.0f;
+}
+
+
+

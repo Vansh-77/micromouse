@@ -28,6 +28,9 @@ typedef struct
 
 uint8_t mpu6500_read(MPU6500_Data *data);
 void mpu6500_calibrate_gyro(void);
+float mpu6500_get_heading(void);
+void mpu6500_update_heading(float dt);
+void mpu6500_reset_heading(void);
 
 
 #endif
