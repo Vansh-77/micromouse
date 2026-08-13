@@ -113,21 +113,23 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
-//  uint8_t whoami;
+  uint8_t whoami;
 //  HAL_I2C_Mem_Read(
 //      &hi2c1,              // Use I2C1
 //      0x68 << 1,           // MPU6500 address
 //      0x75,                // WHO_AM_I register
 //      I2C_MEMADD_SIZE_8BIT,// Register address is 8-bit
-//      &who_am_i,           // Store received byte here
+//      &whoami,           // Store received byte here
 //      1,                   // Read 1 byte
 //      100                  // 100 ms timeout
 //  );
-
+  whoami =  mpu6500_whoami();
+  uart_printf("%d",whoami);
   mpu6500_init();
   MPU6500_Data imu;
 
-//  char msg[] = "UART OK\r\n";
+  char msg[] = "UART OK\r\n";
+  uart_printf(msg);
 
   /* USER CODE END 2 */
 
@@ -139,7 +141,8 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-//	  motor_left(+50);    // forward 50%
+//	  motor_left(+50);   // forward 50%
+//	  delay_ms(2000);
 //	  motor_left(-50);    // reverse 50%
 //
 //	  motor_right(+50);   // forward 50%

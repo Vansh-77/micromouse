@@ -60,58 +60,134 @@ void i2c_write_reg(uint8_t addr, uint8_t reg, uint8_t data){
 void i2c_read_regs(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t len)
 {
     volatile uint32_t temp;
-    // START
+    uint8_t i = 0;
+
+    if (len == 0)
+        return;
+
+    /* Make sure we're in the normal receive configuration */
+    I2C1->CR1 &= ~I2C_CR1_POS;
+    I2C1->CR1 |= I2C_CR1_ACK;
+
+    /* =========================
+       START
+       ========================= */
+
     I2C1->CR1 |= I2C_CR1_START;
+
     while (!(I2C1->SR1 & I2C_SR1_SB));
-    // Device address + WRITE
+
+    /* =========================
+       DEVICE ADDRESS + WRITE
+       ========================= */
+
     I2C1->DR = (addr << 1);
+
     while (!(I2C1->SR1 & I2C_SR1_ADDR));
-    // Clear ADDR
+
+    /* Clear ADDR */
     temp = I2C1->SR1;
     temp = I2C1->SR2;
     (void)temp;
-    // Send register address
+
+    /* =========================
+       REGISTER ADDRESS
+       ========================= */
+
     while (!(I2C1->SR1 & I2C_SR1_TXE));
+
     I2C1->DR = reg;
+
     while (!(I2C1->SR1 & I2C_SR1_BTF));
-    // Repeated START
+
+    /* =========================
+       REPEATED START
+       ========================= */
+
     I2C1->CR1 |= I2C_CR1_START;
+
     while (!(I2C1->SR1 & I2C_SR1_SB));
-    // Device address + READ
+
+    /* =========================
+       DEVICE ADDRESS + READ
+       ========================= */
+
     I2C1->DR = (addr << 1) | 1;
+
     while (!(I2C1->SR1 & I2C_SR1_ADDR));
+
     /*
-     * Clear ADDR while keeping ACK enabled.
-     * For a multi-byte read we ACK every byte except
-     * the final byte.
+     * Clear ADDR.
+     * This also starts the receive process.
      */
     temp = I2C1->SR1;
     temp = I2C1->SR2;
     (void)temp;
 
-    for (uint8_t i = 0; i < len; i++)
+
+    /* =========================
+       3+ BYTE RECEIVE
+       ========================= */
+
+    while (len > 3)
     {
-        if (i == len - 1)
-        {
-            // Last byte: send NACK
-            I2C1->CR1 &= ~I2C_CR1_ACK;
+        /*
+         * With ACK enabled, BTF means another
+         * received byte is ready.
+         */
+        while (!(I2C1->SR1 & I2C_SR1_BTF));
 
-            // Generate STOP
-            I2C1->CR1 |= I2C_CR1_STOP;
-        }
-        else
-        {
-            // ACK this byte so the slave sends the next one
-            I2C1->CR1 |= I2C_CR1_ACK;
-        }
+        data[i++] = I2C1->DR;
 
-        // Wait until received byte is ready
-        while (!(I2C1->SR1 & I2C_SR1_RXNE));
-
-        data[i] = I2C1->DR;
+        len--;
     }
 
-    // Restore ACK for future transactions
+
+    /*
+     * Exactly 3 bytes remain.
+     */
+    while (!(I2C1->SR1 & I2C_SR1_BTF));
+
+    /*
+     * Stop acknowledging received bytes.
+     * This prepares the final byte to be NACKed.
+     */
+    I2C1->CR1 &= ~I2C_CR1_ACK;
+
+    /*
+     * Read byte N-2.
+     */
+    data[i++] = I2C1->DR;
+
+    /*
+     * Generate STOP.
+     */
+    I2C1->CR1 |= I2C_CR1_STOP;
+
+    /*
+     * Read byte N-1.
+     */
+    data[i++] = I2C1->DR;
+
+    /*
+     * IMPORTANT:
+     * Wait for the final byte to actually arrive.
+     */
+    while (!(I2C1->SR1 & I2C_SR1_RXNE));
+
+    /*
+     * Read final byte N.
+     */
+    data[i++] = I2C1->DR;
+
+    /*
+     * Wait until hardware clears STOP.
+     */
+    while (I2C1->CR1 & I2C_CR1_STOP);
+
+    /*
+     * Restore normal state for the next transaction.
+     */
     I2C1->CR1 |= I2C_CR1_ACK;
 }
 
