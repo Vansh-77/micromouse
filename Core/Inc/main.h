@@ -59,20 +59,20 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define IN1_Pin GPIO_PIN_6
-#define IN1_GPIO_Port GPIOA
-#define IN2_Pin GPIO_PIN_7
-#define IN2_GPIO_Port GPIOA
-#define IN3_Pin GPIO_PIN_0
-#define IN3_GPIO_Port GPIOB
-#define IN4_Pin GPIO_PIN_1
-#define IN4_GPIO_Port GPIOB
+#define IN4_Pin GPIO_PIN_6
+#define IN4_GPIO_Port GPIOA
+#define IN3_Pin GPIO_PIN_7
+#define IN3_GPIO_Port GPIOA
+#define IN2_Pin GPIO_PIN_0
+#define IN2_GPIO_Port GPIOB
+#define IN1_Pin GPIO_PIN_1
+#define IN1_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-#define IN1_CHANNEL 1
-#define IN2_CHANNEL 2
-#define IN3_CHANNEL 3
-#define IN4_CHANNEL 4
+#define IN1_CHANNEL 4
+#define IN2_CHANNEL 3
+#define IN3_CHANNEL 2
+#define IN4_CHANNEL 1
 
 
 /* USER CODE END Private defines */

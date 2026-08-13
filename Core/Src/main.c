@@ -113,7 +113,7 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
-  uint8_t whoami;
+//  uint8_t whoami;
 //  HAL_I2C_Mem_Read(
 //      &hi2c1,              // Use I2C1
 //      0x68 << 1,           // MPU6500 address
@@ -123,11 +123,11 @@ int main(void)
 //      1,                   // Read 1 byte
 //      100                  // 100 ms timeout
 //  );
-  whoami =  mpu6500_whoami();
-  uart_printf("%d",whoami);
-  mpu6500_init();
-  MPU6500_Data imu;
-
+//  whoami =  mpu6500_whoami();
+//  uart_printf("%d",whoami);
+//  mpu6500_init();
+//  MPU6500_Data imu;
+//
   char msg[] = "UART OK\r\n";
   uart_printf(msg);
 
@@ -187,8 +187,7 @@ int main(void)
 	  {
 	      uart_printf("MPU6500 READ FAILED\r\n");
 	  }
-
-	    delay_ms(100);
+	  	  delay_ms(100);
 
   }
   /* USER CODE END 3 */
