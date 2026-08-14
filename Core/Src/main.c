@@ -28,6 +28,7 @@
 #include "uart.h"
 #include "i2c.h"
 #include "mpu6500.h"
+#include "bt.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -128,24 +129,26 @@ int main(void)
 //  );
 //  whoami =  mpu6500_whoami();
 //  uart_printf("%d",whoami);
-  mpu6500_init();
-//  MPU6500_Data imu;
+//  mpu6500_init();
+////  MPU6500_Data imu;
+////
+//  char msg[] = "UART OK\r\n";
+//  uart_printf(msg);
 //
-  char msg[] = "UART OK\r\n";
-  uart_printf(msg);
-
-  uart_printf("Calibrating gyro...\r\n");
-
-  mpu6500_calibrate_gyro();
-
-  uart_write("Gyro calibration done\r\n");
-  uint16_t last_time = TIM2->CNT;
-  float time = 0;
-
+//  uart_printf("Calibrating gyro...\r\n");
+//
+//  mpu6500_calibrate_gyro();
+//
+//  uart_write("Gyro calibration done\r\n");
+//  uint16_t last_time = TIM2->CNT;
+//  float time = 0;
+  uint32_t i =0;
+  char msg[64];
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
 
   while (1)
   {
@@ -199,17 +202,20 @@ int main(void)
 //	  {
 //	      uart_printf("MPU6500 READ FAILED\r\n");
 //	  }
-	  uint16_t now = TIM2->CNT;
-	  uint16_t elapsed = now - last_time;
-	  time += elapsed/1000000.0f;
-	  last_time = now;
-	  float dt = elapsed / 1000000.0f;
-//	  if (time < 30){
-	  mpu6500_update_heading(dt);
-//	  uart_printf("%.3f \r\n" , time);
-	  uart_printf("Heading: %.2f\r\n", mpu6500_get_heading());
-//	  }
-	  delay_ms(10);
+//	  uint16_t now = TIM2->CNT;
+//	  uint16_t elapsed = now - last_time;
+//	  time += elapsed/1000000.0f;
+//	  last_time = now;
+//	  float dt = elapsed / 1000000.0f;
+////	  if (time < 30){
+//	  mpu6500_update_heading(dt);
+////	  uart_printf("%.3f \r\n" , time);
+//	  uart_printf("Heading: %.2f\r\n", mpu6500_get_heading());
+////	  }
+	  bt_printf("%d\r\n",i);
+	  i++;
+	 delay_ms(1000);
+
   }
   /* USER CODE END 3 */
 }
@@ -421,7 +427,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 9600;
+  huart1.Init.BaudRate = 115200;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;

@@ -1,0 +1,5 @@
+../Core/Src/bt.c:6:6:bt_write_char	16	static
+../Core/Src/bt.c:14:6:bt_write	16	static
+../Core/Src/bt.c:22:6:bt_printf	144	static
+../Core/Src/bt.c:36:9:bt_read_char	16	static
+../Core/Src/bt.c:45:9:bt_read	24	static
