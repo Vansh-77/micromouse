@@ -1,5 +1,8 @@
-../Core/Src/bt.c:6:6:bt_write_char	16	static
-../Core/Src/bt.c:14:6:bt_write	16	static
-../Core/Src/bt.c:22:6:bt_printf	144	static
-../Core/Src/bt.c:36:9:bt_read_char	16	static
-../Core/Src/bt.c:45:9:bt_read	24	static
+../Drivers/CMSIS/Include/core_cm4.h:1684:22:__NVIC_EnableIRQ	16	static,ignoring_inline_asm
+../Core/Src/bt.c:14:6:bt_write_char	16	static
+../Core/Src/bt.c:22:6:bt_write	16	static
+../Core/Src/bt.c:30:6:bt_printf	144	static
+../Core/Src/bt.c:46:6:bt_init	8	static
+../Core/Src/bt.c:59:6:USART1_IRQHandler	16	static
+../Core/Src/bt.c:100:9:bt_message_available	4	static
+../Core/Src/bt.c:105:6:bt_get_message	24	static

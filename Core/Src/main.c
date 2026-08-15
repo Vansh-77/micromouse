@@ -144,6 +144,7 @@ int main(void)
 //  float time = 0;
   uint32_t i =0;
   char msg[64];
+  bt_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -212,9 +213,17 @@ int main(void)
 ////	  uart_printf("%.3f \r\n" , time);
 //	  uart_printf("Heading: %.2f\r\n", mpu6500_get_heading());
 ////	  }
-	  bt_printf("%d\r\n",i);
-	  i++;
-	 delay_ms(1000);
+//	  bt_printf("%d\r\n",i);
+//	  i++;
+	  if (bt_message_available())
+	     {
+	         bt_get_message(msg);
+
+	         uart_printf("RX: %s\r\n", msg);
+
+	         bt_printf("Received: %s\r\n", msg);
+	     }
+	 delay_ms(10);
 
   }
   /* USER CODE END 3 */

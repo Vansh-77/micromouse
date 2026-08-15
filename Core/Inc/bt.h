@@ -6,8 +6,11 @@
 void bt_write_char(char c);
 void bt_write(const char *str);
 void bt_printf(const char *format, ...);
-uint8_t bt_read_char(char *c);
-uint8_t bt_read(char *buffer, uint8_t max_len);
+
+void bt_init(void);
+
+uint8_t bt_message_available(void);
+void bt_get_message(char *buffer);
 
 
 #endif

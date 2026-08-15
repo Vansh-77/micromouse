@@ -1,5 +1,8 @@
-../Core/Src/bt.c:6:6:bt_write_char	2
-../Core/Src/bt.c:14:6:bt_write	2
-../Core/Src/bt.c:22:6:bt_printf	1
-../Core/Src/bt.c:36:9:bt_read_char	2
-../Core/Src/bt.c:45:9:bt_read	5
+../Drivers/CMSIS/Include/core_cm4.h:1684:22:__NVIC_EnableIRQ	2
+../Core/Src/bt.c:14:6:bt_write_char	2
+../Core/Src/bt.c:22:6:bt_write	2
+../Core/Src/bt.c:30:6:bt_printf	1
+../Core/Src/bt.c:46:6:bt_init	1
+../Core/Src/bt.c:59:6:USART1_IRQHandler	5
+../Core/Src/bt.c:100:9:bt_message_available	1
+../Core/Src/bt.c:105:6:bt_get_message	3
