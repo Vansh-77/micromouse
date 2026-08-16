@@ -29,6 +29,8 @@
 #include "i2c.h"
 #include "mpu6500.h"
 #include "bt.h"
+#include "bt_rx.h"
+#include "joystick.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -142,14 +144,12 @@ int main(void)
 //  uart_write("Gyro calibration done\r\n");
 //  uint16_t last_time = TIM2->CNT;
 //  float time = 0;
-  uint32_t i =0;
-  char msg[64];
-  bt_init();
+  bt_rx_init();
+  joystick_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
 
   while (1)
   {
@@ -215,15 +215,10 @@ int main(void)
 ////	  }
 //	  bt_printf("%d\r\n",i);
 //	  i++;
-	  if (bt_message_available())
-	     {
-	         bt_get_message(msg);
+	  joystick_update();
+	  joystick_motor_control();
 
-	         uart_printf("RX: %s\r\n", msg);
 
-	         bt_printf("Received: %s\r\n", msg);
-	     }
-	 delay_ms(10);
 
   }
   /* USER CODE END 3 */

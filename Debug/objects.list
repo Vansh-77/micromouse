@@ -1,6 +1,8 @@
 "./Core/Src/bt.o"
+"./Core/Src/bt_rx.o"
 "./Core/Src/delay.o"
 "./Core/Src/i2c.o"
+"./Core/Src/joystick.o"
 "./Core/Src/led.o"
 "./Core/Src/main.o"
 "./Core/Src/motor.o"

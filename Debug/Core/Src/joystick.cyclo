@@ -1,0 +1,6 @@
+../Core/Src/joystick.c:17:6:joystick_init	1
+../Core/Src/joystick.c:29:6:joystick_update	17
+../Core/Src/joystick.c:117:9:joystick_available	1
+../Core/Src/joystick.c:123:9:joystick_get_angle	1
+../Core/Src/joystick.c:129:9:joystick_get_radius	1
+../Core/Src/joystick.c:137:6:joystick_motor_control	7
